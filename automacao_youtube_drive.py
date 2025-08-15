@@ -4,6 +4,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
 import yt_dlp
 
 def baixar_video(link):
@@ -32,4 +33,23 @@ def autenticar_drive():
     return service
 
 
-service= autenticar_drive()
+def enviar_para_drive(caminho_arquivo):
+    service = autenticar_drive()
+    nome_no_drive = os.path.basename(caminho_arquivo)
+
+    
+    media = MediaFileUpload(caminho_arquivo, mimetype='video/mp4', resumable=True)
+    arquivo = service.files().create(
+        body={'name': nome_no_drive},
+        media_body=media,
+        fields='id'
+    ).execute()
+
+    service.permissions().create(
+        fileId=arquivo['id'],
+        body={'type': 'anyone', 'role': 'reader'}
+    ).execute()
+
+    link = f"https://drive.google.com/file/d/{arquivo['id']}/view"
+    return link
+

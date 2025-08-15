@@ -202,3 +202,4 @@ credentials.json
 token.json
 # Streamlit
 .streamlit/secrets.toml
+*.mp4
