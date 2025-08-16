@@ -1,9 +1,7 @@
 import os.path
-from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 import yt_dlp
 
@@ -13,12 +11,14 @@ def baixar_video(link):
         'outtmpl': "%(title)s.%(ext)s", 
         'format': '18',            
     }
-
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(link, download=True)
-        caminho_final = ydl.prepare_filename(info)    
-    
-    return caminho_final
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(link, download=True)
+            caminho_final = ydl.prepare_filename(info)    
+        
+        return caminho_final
+    except:
+        print("O link fornecido é inválido ou não está disponível.")
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
@@ -35,8 +35,8 @@ def autenticar_drive():
     return service
 
 
-def enviar_para_drive(caminho_arquivo):
-    service = autenticar_drive()
+def enviar_para_drive(caminho_arquivo, service):
+    
     nome_no_drive = os.path.basename(caminho_arquivo)
 
     
@@ -60,5 +60,6 @@ if __name__ == "__main__":
     link_youtube = str(input('Digite o link do vídeo:'))
     link_youtube = link_youtube.strip()
     arquivo_baixado = baixar_video(link_youtube)
-    link_drive = enviar_para_drive(arquivo_baixado)
+    service = autenticar_drive()
+    link_drive = enviar_para_drive(arquivo_baixado, service)
     print(f'O seu vídeo foi salvo em: {link_drive}')
