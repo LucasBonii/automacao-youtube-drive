@@ -21,5 +21,5 @@
 
 
 ## Execução e demonstração:
--Para uso cotidiano, esse código seria transformado em um executável.
--Vídeo demonstrando o uso: 
+- Para uso cotidiano, esse código seria transformado em um executável.
+- Vídeo demonstrando o uso: https://youtu.be/uGtvOtgW6Gc
