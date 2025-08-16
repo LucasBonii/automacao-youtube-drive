@@ -8,15 +8,17 @@ from googleapiclient.http import MediaFileUpload
 import yt_dlp
 
 def baixar_video(link):
+    
     ydl_opts = {
-        'outtmpl': "video.mp4", 
+        'outtmpl': "%(title)s.%(ext)s", 
         'format': '18',            
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([link])
+        info = ydl.extract_info(link, download=True)
+        caminho_final = ydl.prepare_filename(info)    
     
-    return ydl_opts['outtmpl']
+    return caminho_final
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
@@ -53,3 +55,10 @@ def enviar_para_drive(caminho_arquivo):
     link = f"https://drive.google.com/file/d/{arquivo['id']}/view"
     return link
 
+
+if __name__ == "__main__":
+    link_youtube = str(input('Digite o link do vídeo:'))
+    link_youtube = link_youtube.strip()
+    arquivo_baixado = baixar_video(link_youtube)
+    link_drive = enviar_para_drive(arquivo_baixado)
+    print(f'O seu vídeo foi salvo em: {link_drive}')
